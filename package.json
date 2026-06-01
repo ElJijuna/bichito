@@ -1,0 +1,44 @@
+{
+  "name": "bichito",
+  "version": "0.1.0",
+  "description": "Animated pixel-art desktop pet for any web page",
+  "type": "module",
+  "main": "./dist/bichito.cjs",
+  "module": "./dist/bichito.js",
+  "types": "./dist/bichito.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/bichito.d.ts",
+      "import": "./dist/bichito.js",
+      "require": "./dist/bichito.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+  },
+  "devDependencies": {
+    "@storybook/html": "^10.4.1",
+    "@storybook/html-vite": "^10.4.1",
+    "@vitest/coverage-v8": "^2.0.0",
+    "happy-dom": "^14.0.0",
+    "storybook": "^10.4.1",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "keywords": ["pet", "pixel-art", "canvas", "animation", "fun"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ElJijuna/bichito.git"
+  }
+}
