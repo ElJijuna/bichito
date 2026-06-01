@@ -49,13 +49,13 @@ Returns a **destroy function** — call it to stop the pet and remove its canvas
 
 ## Pets
 
-| ID | Especie | Descripción |
+| ID | Species | Description |
 |---|---|---|
-| `ariel` | Gato | Negro, ojos verdes |
-| `cain` | Gato | Amarillo atigrado, pata derecha blanca, pecho blanco, ojos amarillos |
-| `samael` | Gato | Blanco, ojos celestes |
+| `ariel` | Cat | Black, green eyes |
+| `cain` | Cat | Yellow tabby, white right paw, white chest, yellow eyes |
+| `samael` | Cat | White, light blue eyes |
 | `thor` | French Bulldog | Blue pied |
-| `loki` | French Bulldog | Blue pied, pecho blanco |
+| `loki` | French Bulldog | Blue pied, white chest |
 | `pizza` | French Bulldog | Blue merle pied |
 
 ---

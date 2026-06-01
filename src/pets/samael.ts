@@ -3,9 +3,9 @@ import { arielDefinition } from './ariel.js'
 
 // Samael: white cat, light blue eyes
 const COLOR_MAP: Record<string, string> = {
-  '#111111': '#e8e8e8', // black → white
-  '#1a1a1a': '#cccccc', // soft black → light gray
-  '#22cc44': '#44bbff', // green eye → light blue
+  '#111111': '#e8e8e8', // black → white/light grey body
+  '#222222': '#bbbbbb', // shadow → medium grey
+  '#33dd55': '#44ccff', // green eye → light blue
   '#119933': '#2288cc', // eye shadow → darker blue
 }
 
@@ -27,13 +27,13 @@ const base = arielDefinition.clips
 export const samaelDefinition: PetDefinition = {
   id: 'samael',
   clips: {
-    idle: remapClip(base.idle),
+    idle:         remapClip(base.idle),
     'walk-right': remapClip(base['walk-right']),
-    'walk-left': remapClip(base['walk-left']),
-    'walk-up': remapClip(base['walk-up']),
-    'walk-down': remapClip(base['walk-down']),
-    peek: remapClip(base.peek),
-    jump: remapClip(base.jump),
-    heart: remapClip(base.heart),
+    'walk-left':  remapClip(base['walk-left']),
+    'walk-up':    remapClip(base['walk-up']),
+    'walk-down':  remapClip(base['walk-down']),
+    peek:         remapClip(base.peek),
+    jump:         remapClip(base.jump),
+    heart:        remapClip(base.heart),
   },
 }
