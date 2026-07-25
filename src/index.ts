@@ -1,34 +1,14 @@
 import { pickNextBehavior, Scheduler } from './animations/scheduler.js';
 import { buildTransitions, StateMachine } from './animations/state-machine.js';
+import { createHeartBubble, type HeartBubble } from './heart-bubble.js';
 import { PET_REGISTRY } from './pets/index.js';
-import type { AnimationState, BehaviorState, BichitoConfig, SpriteFrame } from './types.js';
+import { SPRITE_SIZE } from './pets/sprite-utils.js';
+import { drawFrame } from './render.js';
+import type { AnimationState, BehaviorState, BichitoConfig } from './types.js';
 
 const DEFAULT_PET = 'ariel' as const;
 const DEFAULT_SIZE = 30;
 const SPEED_PX = 1.5;
-
-function renderFrame(ctx: CanvasRenderingContext2D, frame: SpriteFrame, size: number): void {
-  const scale = size / 30;
-
-  ctx.clearRect(0, 0, size, size);
-
-  // `entries()` yields defined values, so transparency is the only case to skip.
-  for (const [row, rowData] of frame.entries()) {
-    for (const [col, color] of rowData.entries()) {
-      if (color === null) {
-        continue;
-      }
-
-      ctx.fillStyle = color;
-      ctx.fillRect(
-        Math.round(col * scale),
-        Math.round(row * scale),
-        Math.ceil(scale),
-        Math.ceil(scale),
-      );
-    }
-  }
-}
 
 function clampPosition(x: number, y: number, size: number): { x: number; y: number } {
   return {
@@ -58,6 +38,8 @@ export function bichito(config: BichitoConfig = {}): () => void {
   /** Time spent in the current clip, used to drive one-shot clips to completion. */
   let clipElapsedMs = 0;
   let jumpOriginY = state.y;
+  /** The heart bubble currently popped above the pet, if any. */
+  let bubble: HeartBubble | null = null;
 
   // Create canvas
   const canvas = document.createElement('canvas');
@@ -104,6 +86,11 @@ export function bichito(config: BichitoConfig = {}): () => void {
   }
 
   canvas.addEventListener('click', () => {
+    // Every click pops a heart bubble. Clicking again restarts it rather than
+    // stacking a second canvas on top of the first.
+    bubble?.destroy();
+    bubble = createHeartBubble(container, size);
+
     if (sm.state === 'peek') {
       transitionTo(Math.random() < 0.5 ? 'jump' : 'heart');
     } else {
@@ -183,7 +170,13 @@ export function bichito(config: BichitoConfig = {}): () => void {
       const frame = clip.frames[frameIndex];
 
       if (frame !== undefined) {
-        renderFrame(ctx, frame, size);
+        drawFrame(ctx, frame, size / SPRITE_SIZE);
+      }
+
+      // Re-anchored every frame so the bubble tracks a pet that is still moving.
+      if (bubble !== null && !bubble.update(state.x, state.y, elapsed)) {
+        bubble.destroy();
+        bubble = null;
       }
     },
 
@@ -200,6 +193,8 @@ export function bichito(config: BichitoConfig = {}): () => void {
 
   return () => {
     scheduler.stop();
+    bubble?.destroy();
+    bubble = null;
     canvas.remove();
   };
 }

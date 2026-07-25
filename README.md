@@ -71,8 +71,13 @@ tall bat ears, a wide flat muzzle and a stubby tail.
 | **Walk left / right** | Random, every 3–6 seconds — four-key side walk cycle |
 | **Walk up / down** | Random — back view walking away, front view walking toward you |
 | **Peek** | Pet walks to the right edge, leans in and watches you |
+| **Heart bubble** | Click the pet — a speech bubble pops up with a beating pixel heart |
 | **Jump** | Click the pet while it peeks (50% chance) — crouch, launch, hang, land |
 | **Heart** | Click the pet while it peeks (50% chance) — the pet beams and a heart floats up |
+
+Clicking anywhere on the pet pops the heart bubble. It tracks the pet while it
+keeps walking, drifts upward, fades out after ~1.5s, and stays inside the
+viewport when the pet is against an edge.
 
 Every clip animates: no state renders as a still image, and the walk cycles use
 four distinct key frames rather than repeating two.

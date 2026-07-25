@@ -29,14 +29,18 @@ export type Palette = Record<string, string | null>;
  * character, so malformed art fails loudly at import time instead of rendering
  * as silent holes.
  */
-export function parseFrame(palette: Palette, rows: string[]): SpriteFrame {
-  if (rows.length !== SPRITE_SIZE) {
-    throw new Error(`Sprite must have ${SPRITE_SIZE} rows, received ${rows.length}`);
+export function parseFrame(
+  palette: Palette,
+  rows: string[],
+  size: number = SPRITE_SIZE,
+): SpriteFrame {
+  if (rows.length !== size) {
+    throw new Error(`Sprite must have ${size} rows, received ${rows.length}`);
   }
 
   return rows.map((row, y): PixelRow => {
-    if (row.length !== SPRITE_SIZE) {
-      throw new Error(`Sprite row ${y} must be ${SPRITE_SIZE} chars, received ${row.length}`);
+    if (row.length !== size) {
+      throw new Error(`Sprite row ${y} must be ${size} chars, received ${row.length}`);
     }
 
     return [...row].map((char, x): string | null => {

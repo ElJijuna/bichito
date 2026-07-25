@@ -59,4 +59,39 @@ describe('bichito()', () => {
     expect(canvas).toBeTruthy();
     destroy();
   });
+
+  describe('clicking the pet', () => {
+    it('pops a heart bubble', () => {
+      const destroy = bichito({ pet: 'ariel', size: 30 });
+      const pet = document.body.querySelector('canvas');
+
+      expect(document.body.querySelectorAll('canvas')).toHaveLength(1);
+      pet?.dispatchEvent(new MouseEvent('click'));
+
+      expect(document.body.querySelectorAll('canvas')).toHaveLength(2);
+      destroy();
+    });
+
+    it('restarts the bubble instead of stacking one per click', () => {
+      const destroy = bichito({ pet: 'ariel', size: 30 });
+      const pet = document.body.querySelector('canvas');
+
+      for (let i = 0; i < 5; i++) {
+        pet?.dispatchEvent(new MouseEvent('click'));
+      }
+
+      // The pet plus exactly one bubble.
+      expect(document.body.querySelectorAll('canvas')).toHaveLength(2);
+      destroy();
+    });
+
+    it('removes the bubble along with the pet on destroy', () => {
+      const destroy = bichito({ pet: 'ariel', size: 30 });
+
+      document.body.querySelector('canvas')?.dispatchEvent(new MouseEvent('click'));
+      destroy();
+
+      expect(document.body.querySelectorAll('canvas')).toHaveLength(0);
+    });
+  });
 });
