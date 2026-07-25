@@ -18,6 +18,13 @@ export interface SpeciesColors {
   white: string;
   /** Shaded markings. */
   whiteDark: string;
+  /**
+   * The viewer-left paw, kept separate from {@link white} so a pet can wear a
+   * single odd sock. Defaults to `white`, i.e. both paws match.
+   */
+  pawLeft?: string;
+  /** Shaded viewer-left paw. Defaults to {@link whiteDark}. */
+  pawLeftDark?: string;
   /** Iris. */
   iris: string;
   /** Pupil. */
@@ -41,6 +48,8 @@ export function toPalette(colors: SpeciesColors): Palette {
     L: colors.bodyLight,
     W: colors.white,
     w: colors.whiteDark,
+    V: colors.pawLeft ?? colors.white,
+    v: colors.pawLeftDark ?? colors.whiteDark,
     G: colors.iris,
     P: colors.pupil,
     S: colors.shine,

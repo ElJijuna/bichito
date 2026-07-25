@@ -3,7 +3,12 @@ import { applyMarkings, buildClips } from './build-clips.js';
 import { CAT_POSES } from './cat-art.js';
 import type { SpeciesColors } from './species-palette.js';
 
-/** Cain: amber tabby with yellow eyes and dark stripes. */
+/**
+ * Cain: amber tabby with yellow eyes, dark stripes and a single white paw.
+ *
+ * Only the viewer-right paw is white — the left one takes the coat colour, so
+ * the odd sock reads as a marking rather than a pair of boots.
+ */
 export const CAIN_COLORS: SpeciesColors = {
   outline: '#3a2306',
   body: '#d6941f',
@@ -11,6 +16,8 @@ export const CAIN_COLORS: SpeciesColors = {
   bodyLight: '#f2b74c',
   white: '#fff7ea',
   whiteDark: '#dccbb0',
+  pawLeft: '#d6941f',
+  pawLeftDark: '#a2690f',
   iris: '#ffd633',
   pupil: '#2b1904',
   shine: '#ffffff',

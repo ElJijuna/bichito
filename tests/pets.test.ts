@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CAIN_COLORS } from '../src/pets/cain.js';
 import { PET_REGISTRY } from '../src/pets/index.js';
 import type { AnimationState, PetId, SpriteFrame } from '../src/types.js';
 
@@ -154,5 +155,31 @@ describe('PET_REGISTRY', () => {
     // Same species shares a silhouette; only the coat differs.
     expect(shape('ariel')).toBe(shape('samael'));
     expect(shape('thor')).toBe(shape('pizza'));
+  });
+
+  describe('paw markings', () => {
+    /** Row and columns where the two front paws sit in each species' front pose. */
+    const PAWS = { cat: { y: 24, left: 9, right: 19 }, dog: { y: 25, left: 7, right: 18 } };
+    const pawColors = (id: PetId): [string | null, string | null] => {
+      const { y, left, right } = PET_IDS.indexOf(id) < 3 ? PAWS.cat : PAWS.dog;
+      const row = idleFrame(id)[y];
+
+      return [row?.[left] ?? null, row?.[right] ?? null];
+    };
+
+    it('gives cain one white paw and one coat-coloured paw', () => {
+      const [left, right] = pawColors('cain');
+
+      expect(left).toBe(CAIN_COLORS.body);
+      expect(right).toBe(CAIN_COLORS.white);
+    });
+
+    it('leaves every other pet with matching paws', () => {
+      for (const id of PET_IDS.filter((p) => p !== 'cain')) {
+        const [left, right] = pawColors(id);
+
+        expect(left, `${id} paws should match`).toBe(right);
+      }
+    });
   });
 });

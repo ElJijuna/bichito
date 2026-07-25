@@ -52,7 +52,7 @@ Returns a **destroy function** — call it to stop the pet and remove its canvas
 | ID | Species | Description |
 |---|---|---|
 | `ariel` | Cat | Solid black coat, bright green eyes |
-| `cain` | Cat | Amber tabby with dark banding, yellow eyes |
+| `cain` | Cat | Amber tabby with dark banding, yellow eyes, one white paw |
 | `samael` | Cat | White coat, ice-blue eyes |
 | `thor` | French Bulldog | Blue pied, warm brown eyes |
 | `loki` | French Bulldog | Fawn with a dark mask, green eyes |
