@@ -1,4 +1,4 @@
-import type { StorybookConfig } from '@storybook/html-vite'
+import type { StorybookConfig } from '@storybook/html-vite';
 
 const config: StorybookConfig = {
   stories: ['../stories/**/*.stories.ts'],
@@ -7,6 +7,6 @@ const config: StorybookConfig = {
     name: '@storybook/html-vite',
     options: {},
   },
-}
+};
 
-export default config
+export default config;

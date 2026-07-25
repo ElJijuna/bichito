@@ -1,4 +1,4 @@
-export type PetId = 'ariel' | 'cain' | 'samael' | 'thor' | 'loki' | 'pizza'
+export type PetId = 'ariel' | 'cain' | 'samael' | 'thor' | 'loki' | 'pizza';
 
 export type AnimationState =
   | 'idle'
@@ -8,38 +8,38 @@ export type AnimationState =
   | 'walk-down'
   | 'peek'
   | 'jump'
-  | 'heart'
+  | 'heart';
 
-export type PixelRow = (string | null)[]
-export type SpriteFrame = PixelRow[]
+export type PixelRow = (string | null)[];
+export type SpriteFrame = PixelRow[];
 
 export interface AnimationClip {
-  frames: SpriteFrame[]
-  fps: number
-  loop: boolean
+  frames: SpriteFrame[];
+  fps: number;
+  loop: boolean;
 }
 
 export interface PetDefinition {
-  id: PetId
-  clips: Record<AnimationState, AnimationClip>
+  id: PetId;
+  clips: Record<AnimationState, AnimationClip>;
 }
 
 export interface BichitoConfig {
-  pet?: PetId
-  size?: number
-  container?: HTMLElement
+  pet?: PetId;
+  size?: number;
+  container?: HTMLElement;
 }
 
 export interface BehaviorState {
-  animation: AnimationState
-  x: number
-  y: number
-  direction: 1 | -1
+  animation: AnimationState;
+  x: number;
+  y: number;
+  direction: 1 | -1;
 }
 
 export interface Transition {
-  from: AnimationState | AnimationState[] | '*'
-  to: AnimationState
-  guard?: (state: BehaviorState) => boolean
-  action?: (state: BehaviorState) => Partial<BehaviorState>
+  from: AnimationState | AnimationState[] | '*';
+  to: AnimationState;
+  guard?: (state: BehaviorState) => boolean;
+  action?: (state: BehaviorState) => Partial<BehaviorState>;
 }

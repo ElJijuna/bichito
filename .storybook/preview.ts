@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/html'
+import type { Preview } from '@storybook/html';
 
 const preview: Preview = {
   parameters: {
@@ -11,6 +11,6 @@ const preview: Preview = {
       ],
     },
   },
-}
+};
 
-export default preview
+export default preview;

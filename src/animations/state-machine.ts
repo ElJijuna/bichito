@@ -1,16 +1,16 @@
-import type { AnimationState, BehaviorState, Transition } from '../types.js'
+import type { AnimationState, BehaviorState, Transition } from '../types.js';
 
 export class StateMachine {
-  private current: AnimationState
-  private readonly transitions: Transition[]
+  private current: AnimationState;
+  private readonly transitions: Transition[];
 
   constructor(initial: AnimationState, transitions: Transition[]) {
-    this.current = initial
-    this.transitions = transitions
+    this.current = initial;
+    this.transitions = transitions;
   }
 
   get state(): AnimationState {
-    return this.current
+    return this.current;
   }
 
   canTransition(to: AnimationState, context: BehaviorState): boolean {
@@ -18,11 +18,12 @@ export class StateMachine {
       const fromMatch =
         t.from === '*' ||
         t.from === this.current ||
-        (Array.isArray(t.from) && t.from.includes(this.current))
-      const toMatch = t.to === to
-      const guardPass = t.guard == null || t.guard(context)
-      return fromMatch && toMatch && guardPass
-    })
+        (Array.isArray(t.from) && t.from.includes(this.current));
+      const toMatch = t.to === to;
+      const guardPass = t.guard == null || t.guard(context);
+
+      return fromMatch && toMatch && guardPass;
+    });
   }
 
   send(event: AnimationState, context: BehaviorState): BehaviorState {
@@ -30,23 +31,28 @@ export class StateMachine {
       const fromMatch =
         t.from === '*' ||
         t.from === this.current ||
-        (Array.isArray(t.from) && t.from.includes(this.current))
-      const toMatch = t.to === event
-      const guardPass = t.guard == null || t.guard(context)
-      return fromMatch && toMatch && guardPass
-    })
+        (Array.isArray(t.from) && t.from.includes(this.current));
+      const toMatch = t.to === event;
+      const guardPass = t.guard == null || t.guard(context);
 
-    if (transition == null) return context
+      return fromMatch && toMatch && guardPass;
+    });
 
-    this.current = event
-    if (transition.action) {
-      return { ...context, ...transition.action(context), animation: event }
+    if (transition == null) {
+      return context;
     }
-    return { ...context, animation: event }
+
+    this.current = event;
+
+    if (transition.action) {
+      return { ...context, ...transition.action(context), animation: event };
+    }
+
+    return { ...context, animation: event };
   }
 
   reset(state: AnimationState): void {
-    this.current = state
+    this.current = state;
   }
 }
 
@@ -75,5 +81,5 @@ export function buildTransitions(viewportWidth: number, size: number): Transitio
     { from: 'jump', to: 'idle' },
     { from: 'heart', to: 'idle' },
     { from: '*', to: 'idle' },
-  ]
+  ];
 }

@@ -1,6 +1,7 @@
-import { defineConfig } from 'vitest/config'
+import vitestConfig from 'super-configs/vitest';
+import { mergeConfig } from 'vitest/config';
 
-export default defineConfig({
+export default mergeConfig(vitestConfig, {
   test: {
     environment: 'happy-dom',
     coverage: {
@@ -9,4 +10,4 @@ export default defineConfig({
       thresholds: { lines: 80, functions: 80 },
     },
   },
-})
+});

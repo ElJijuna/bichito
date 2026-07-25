@@ -13,7 +13,9 @@
       "require": "./dist/bichito.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -21,21 +23,35 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "biome check --write .",
+    "format:check": "biome check .",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+    "prepublishOnly": "npm run check && npm run build"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.5",
     "@storybook/html": "^10.4.1",
     "@storybook/html-vite": "^10.4.1",
     "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^10.8.0",
     "happy-dom": "^14.0.0",
     "storybook": "^10.4.1",
+    "super-configs": "^1.19.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"
   },
-  "keywords": ["pet", "pixel-art", "canvas", "animation", "fun"],
+  "keywords": [
+    "pet",
+    "pixel-art",
+    "canvas",
+    "animation",
+    "fun"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",

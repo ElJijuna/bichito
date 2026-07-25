@@ -1,18 +1,23 @@
 {
+  "extends": "super-configs/tsconfig/base",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ES2022", "DOM"],
-    "strict": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist",
-    "skipLibCheck": true
+    "outDir": "./dist"
   },
-  "include": ["src", "tests", "stories", ".storybook"]
+  "include": [
+    "src",
+    "tests",
+    "stories",
+    ".storybook/**/*.ts",
+    "types",
+    "tsup.config.ts",
+    "vitest.config.ts"
+  ]
 }

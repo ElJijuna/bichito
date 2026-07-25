@@ -1,5 +1,5 @@
-import type { PetDefinition, AnimationClip, SpriteFrame } from '../types.js'
-import { thorDefinition } from './thor.js'
+import type { AnimationClip, PetDefinition, SpriteFrame } from '../types.js';
+import { thorDefinition } from './thor.js';
 
 // Loki: French Bulldog, blue pied + white chest
 // Thor already has a white chest strip — for Loki we extend it more prominently
@@ -8,22 +8,26 @@ import { thorDefinition } from './thor.js'
 function addExtraChest(frame: SpriteFrame): SpriteFrame {
   return frame.map((row, rowIdx) => {
     // Extend white chest to cover more of the front
-    if (rowIdx < 13 || rowIdx > 20) return row
+    if (rowIdx < 13 || rowIdx > 20) {
+      return row;
+    }
+
     return row.map((px, colIdx) => {
       if (colIdx >= 11 && colIdx <= 19 && (rowIdx === 14 || rowIdx === 15 || rowIdx === 16)) {
         // already white in thor, just ensure consistency
-        return '#f0f0f0'
+        return '#f0f0f0';
       }
-      return px
-    })
-  })
+
+      return px;
+    });
+  });
 }
 
 function enhanceClip(clip: AnimationClip): AnimationClip {
-  return { ...clip, frames: clip.frames.map(addExtraChest) }
+  return { ...clip, frames: clip.frames.map(addExtraChest) };
 }
 
-const base = thorDefinition.clips
+const base = thorDefinition.clips;
 
 export const lokiDefinition: PetDefinition = {
   id: 'loki',
@@ -37,4 +41,4 @@ export const lokiDefinition: PetDefinition = {
     jump: enhanceClip(base.jump),
     heart: base.heart,
   },
-}
+};
