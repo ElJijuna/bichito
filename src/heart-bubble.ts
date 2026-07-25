@@ -4,8 +4,16 @@ import type { SpriteFrame } from './types.js';
 
 /** The bubble is authored on its own smaller grid than the pets. */
 const BUBBLE_SIZE = 20;
-/** Last row of the bubble tail, used to seat the bubble on the pet's head. */
+/** Row just past the tail tip, used to seat the bubble on the pet's head. */
 const TAIL_TIP_ROW = 17;
+/**
+ * Horizontal centre of the tail tip (it spans cols 10-11).
+ *
+ * The bubble is anchored by its tail rather than by the canvas, because the art
+ * is left-heavy inside the 20-wide grid — centring the canvas would leave the
+ * tail pointing somewhere other than at the pet.
+ */
+const TAIL_TIP_COL = 10.5;
 const PALETTE: Palette = {
   o: '#2b2b33', // outline
   b: '#fdfdff', // bubble fill
@@ -169,15 +177,16 @@ export function createHeartBubble(container: HTMLElement, petSize: number): Hear
         return false;
       }
 
-      // Drift upward as it ages, and fade only over the final stretch.
-      const rise = life * petSize * 0.4;
+      // A couple of pixels of bob, not a drift — the tail has to stay on the
+      // pet's head, so the bubble cannot float away from it.
+      const rise = life * 2 * scale;
       const fade = life < FADE_AFTER ? 1 : 1 - (life - FADE_AFTER) / (1 - FADE_AFTER);
+      // Put the tail tip over the pet's centre, then seat it on its head.
+      const wantX = petX + petSize / 2 - TAIL_TIP_COL * scale;
       // The pet walks to the right edge before it peeks, which is exactly when
       // it gets clicked, so the bubble has to be kept inside the viewport.
-      const wantX = petX + petSize - dimension / 2;
       const x = Math.max(0, Math.min(window.innerWidth - dimension, wantX));
-      // `TAIL_TIP_ROW` lands the tail on the pet's head instead of floating free.
-      const y = Math.max(0, petY - dimension + (BUBBLE_SIZE - TAIL_TIP_ROW) * scale - rise);
+      const y = Math.max(0, petY - TAIL_TIP_ROW * scale - rise);
 
       canvas.style.left = `${x}px`;
       canvas.style.top = `${y}px`;

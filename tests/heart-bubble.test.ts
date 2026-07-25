@@ -61,6 +61,53 @@ describe('createHeartBubble', () => {
     bubble.destroy();
   });
 
+  describe('anchoring', () => {
+    /** The tail tip spans cols 10-11 of the 20-wide grid. */
+    const TAIL_TIP_COL = 10.5;
+    const TAIL_TIP_ROW = 17;
+
+    it.each([30, 60, 90])('points the tail at the pet centre at size %i', (petSize) => {
+      const bubble = createHeartBubble(document.body, petSize);
+      const canvas = document.body.querySelector('canvas');
+      const petX = 170;
+
+      bubble.update(petX, 240, 1);
+
+      const scale = Math.max(1, Math.round(petSize / 30));
+      const left = Number.parseFloat(canvas?.style.left ?? '0');
+
+      expect(left + TAIL_TIP_COL * scale).toBeCloseTo(petX + petSize / 2, 5);
+      bubble.destroy();
+    });
+
+    it('seats the tail on the pet head rather than floating above it', () => {
+      const bubble = createHeartBubble(document.body, 90);
+      const canvas = document.body.querySelector('canvas');
+      const petY = 240;
+
+      bubble.update(170, petY, 1);
+
+      const top = Number.parseFloat(canvas?.style.top ?? '0');
+
+      expect(top + TAIL_TIP_ROW * 3).toBeCloseTo(petY, 0);
+      bubble.destroy();
+    });
+
+    it('bobs by only a couple of pixels so the tail stays attached', () => {
+      const bubble = createHeartBubble(document.body, 90);
+      const canvas = document.body.querySelector('canvas');
+
+      bubble.update(170, 240, 1);
+      const start = Number.parseFloat(canvas?.style.top ?? '0');
+
+      // Near the end of its life, where the old drift was worst.
+      bubble.update(170, 240, 1400);
+      const end = Number.parseFloat(canvas?.style.top ?? '0');
+
+      expect(start - end).toBeLessThanOrEqual(2 * 3);
+    });
+  });
+
   it('follows the pet as it moves', () => {
     const bubble = createHeartBubble(document.body, 30);
     const canvas = document.body.querySelector('canvas');
