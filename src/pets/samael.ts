@@ -1,42 +1,30 @@
-import type { AnimationClip, PetDefinition, SpriteFrame } from '../types.js';
-import { arielDefinition } from './ariel.js';
+import type { PetDefinition } from '../types.js';
+import { buildClips } from './build-clips.js';
+import { CAT_POSES } from './cat-art.js';
+import type { SpeciesColors } from './species-palette.js';
 
-// Samael: white cat, light blue eyes
-const COLOR_MAP: Record<string, string> = {
-  '#111111': '#e8e8e8', // black → white/light grey body
-  '#222222': '#bbbbbb', // shadow → medium grey
-  '#33dd55': '#44ccff', // green eye → light blue
-  '#119933': '#2288cc', // eye shadow → darker blue
+/**
+ * Samael: white cat with ice-blue eyes.
+ *
+ * A white pet needs a mid-grey outline rather than a near-black one, otherwise
+ * the silhouette reads as a heavy ink drawing instead of a pale cat.
+ */
+export const SAMAEL_COLORS: SpeciesColors = {
+  outline: '#7c8496',
+  body: '#eef1f7',
+  bodyDark: '#ccd3e0',
+  bodyLight: '#ffffff',
+  white: '#ffffff',
+  whiteDark: '#dde3ee',
+  iris: '#4fc3f7',
+  pupil: '#123044',
+  shine: '#ffffff',
+  nose: '#f2a0b4',
+  innerEar: '#ffc9d6',
+  mouth: '#7c8496',
 };
-
-function remapFrame(frame: SpriteFrame): SpriteFrame {
-  return frame.map((row) =>
-    row.map((px) => {
-      if (px === null) {
-        return null;
-      }
-
-      return COLOR_MAP[px] ?? px;
-    }),
-  );
-}
-
-function remapClip(clip: AnimationClip): AnimationClip {
-  return { ...clip, frames: clip.frames.map(remapFrame) };
-}
-
-const base = arielDefinition.clips;
 
 export const samaelDefinition: PetDefinition = {
   id: 'samael',
-  clips: {
-    idle: remapClip(base.idle),
-    'walk-right': remapClip(base['walk-right']),
-    'walk-left': remapClip(base['walk-left']),
-    'walk-up': remapClip(base['walk-up']),
-    'walk-down': remapClip(base['walk-down']),
-    peek: remapClip(base.peek),
-    jump: remapClip(base.jump),
-    heart: remapClip(base.heart),
-  },
+  clips: buildClips(CAT_POSES, SAMAEL_COLORS),
 };

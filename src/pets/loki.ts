@@ -1,44 +1,32 @@
-import type { AnimationClip, PetDefinition, SpriteFrame } from '../types.js';
-import { thorDefinition } from './thor.js';
+import type { PetDefinition } from '../types.js';
+import { applyMarkings, buildClips } from './build-clips.js';
+import { DOG_POSES } from './dog-art.js';
+import type { SpeciesColors } from './species-palette.js';
 
-// Loki: French Bulldog, blue pied + white chest
-// Thor already has a white chest strip — for Loki we extend it more prominently
-// by adding extra white pixels to the belly/chest area
+/** Loki: fawn French bulldog with a dark mask and green eyes. */
+export const LOKI_COLORS: SpeciesColors = {
+  outline: '#3b2a18',
+  body: '#c99a63',
+  bodyDark: '#9a7043',
+  bodyLight: '#e3ba86',
+  white: '#fbf3e6',
+  whiteDark: '#d9cbb4',
+  iris: '#7fbf5f',
+  pupil: '#1d1409',
+  shine: '#ffffff',
+  nose: '#3b2a18',
+  innerEar: '#e8a9b4',
+  mouth: '#3b2a18',
+};
 
-function addExtraChest(frame: SpriteFrame): SpriteFrame {
-  return frame.map((row, rowIdx) => {
-    // Extend white chest to cover more of the front
-    if (rowIdx < 13 || rowIdx > 20) {
-      return row;
-    }
-
-    return row.map((px, colIdx) => {
-      if (colIdx >= 11 && colIdx <= 19 && (rowIdx === 14 || rowIdx === 15 || rowIdx === 16)) {
-        // already white in thor, just ensure consistency
-        return '#f0f0f0';
-      }
-
-      return px;
-    });
-  });
-}
-
-function enhanceClip(clip: AnimationClip): AnimationClip {
-  return { ...clip, frames: clip.frames.map(addExtraChest) };
-}
-
-const base = thorDefinition.clips;
+const MASK = '#5c4227';
+/** Fawn frenchies wear a dark mask across the muzzle and around the eyes. */
+const mask = (color: string, _x: number, y: number): string =>
+  y >= 9 && y <= 18 && (color === LOKI_COLORS.body || color === LOKI_COLORS.bodyLight)
+    ? MASK
+    : color;
 
 export const lokiDefinition: PetDefinition = {
   id: 'loki',
-  clips: {
-    idle: enhanceClip(base.idle),
-    'walk-right': enhanceClip(base['walk-right']),
-    'walk-left': enhanceClip(base['walk-left']),
-    'walk-up': enhanceClip(base['walk-up']),
-    'walk-down': enhanceClip(base['walk-down']),
-    peek: enhanceClip(base.peek),
-    jump: enhanceClip(base.jump),
-    heart: base.heart,
-  },
+  clips: applyMarkings(buildClips(DOG_POSES, LOKI_COLORS), mask),
 };

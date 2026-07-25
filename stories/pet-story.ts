@@ -1,5 +1,5 @@
 import { bichito } from '../src/index.js';
-import type { AnimationState, PetId } from '../src/types.js';
+import type { PetId } from '../src/types.js';
 
 export interface PetStoryArgs {
   size: number;

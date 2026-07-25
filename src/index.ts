@@ -12,17 +12,10 @@ function renderFrame(ctx: CanvasRenderingContext2D, frame: SpriteFrame, size: nu
 
   ctx.clearRect(0, 0, size, size);
 
-  for (let row = 0; row < frame.length; row++) {
-    const rowData = frame[row];
-
-    if (rowData == null) {
-      continue;
-    }
-
-    for (let col = 0; col < rowData.length; col++) {
-      const color = rowData[col];
-
-      if (color == null) {
+  // `entries()` yields defined values, so transparency is the only case to skip.
+  for (const [row, rowData] of frame.entries()) {
+    for (const [col, color] of rowData.entries()) {
+      if (color === null) {
         continue;
       }
 
@@ -44,97 +37,6 @@ function clampPosition(x: number, y: number, size: number): { x: number; y: numb
   };
 }
 
-function showHeartOverlay(anchorCanvas: HTMLCanvasElement, size: number): void {
-  const heartSize = Math.max(16, Math.round(size * 0.6));
-  const heart = document.createElement('canvas');
-
-  heart.width = heartSize;
-  heart.height = heartSize;
-  heart.style.cssText = `
-    position: fixed;
-    pointer-events: none;
-    z-index: 2147483647;
-    image-rendering: pixelated;
-  `;
-
-  const rect = anchorCanvas.getBoundingClientRect();
-  const top = rect.top - heartSize - 4;
-  const left = rect.left + (size - heartSize) / 2;
-
-  heart.style.left = `${left}px`;
-  heart.style.top = `${top}px`;
-  document.body.appendChild(heart);
-
-  // Draw pixel heart
-  const ctx = heart.getContext('2d');
-
-  if (ctx) {
-    const s = heartSize / 8;
-
-    ctx.fillStyle = '#ff4488';
-    const pixels = [
-      [1, 0],
-      [2, 0],
-      [5, 0],
-      [6, 0],
-      [0, 1],
-      [1, 1],
-      [2, 1],
-      [3, 1],
-      [4, 1],
-      [5, 1],
-      [6, 1],
-      [7, 1],
-      [0, 2],
-      [1, 2],
-      [2, 2],
-      [3, 2],
-      [4, 2],
-      [5, 2],
-      [6, 2],
-      [7, 2],
-      [1, 3],
-      [2, 3],
-      [3, 3],
-      [4, 3],
-      [5, 3],
-      [6, 3],
-      [2, 4],
-      [3, 4],
-      [4, 4],
-      [5, 4],
-      [3, 5],
-      [4, 5],
-    ];
-
-    for (const coord of pixels) {
-      const px = coord[0] ?? 0;
-      const py = coord[1] ?? 0;
-
-      ctx.fillRect(px * s, py * s, s, s);
-    }
-  }
-
-  // Float upward and fade
-  let opacity = 1;
-  let dy = 0;
-
-  const animate = () => {
-    opacity -= 0.03;
-    dy += 0.5;
-    heart.style.opacity = String(opacity);
-    heart.style.top = `${top - dy}px`;
-
-    if (opacity > 0) {
-      requestAnimationFrame(animate);
-    } else {
-      heart.remove();
-    }
-  };
-
-  requestAnimationFrame(animate);
-}
-
 export function bichito(config: BichitoConfig = {}): () => void {
   const petId = config.pet ?? DEFAULT_PET;
   const size = config.size ?? DEFAULT_SIZE;
@@ -153,7 +55,8 @@ export function bichito(config: BichitoConfig = {}): () => void {
   };
   let frameIndex = 0;
   let frameAccMs = 0;
-  let jumpPhase = 0;
+  /** Time spent in the current clip, used to drive one-shot clips to completion. */
+  let clipElapsedMs = 0;
   let jumpOriginY = state.y;
 
   // Create canvas
@@ -172,13 +75,19 @@ export function bichito(config: BichitoConfig = {}): () => void {
     `top:${state.y}px`,
   ].join(';');
 
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d');
+
+  // Nothing has been mounted yet, so there is nothing to tear down.
+  if (ctx === null) {
+    return () => undefined;
+  }
 
   function transitionTo(next: AnimationState): void {
     if (sm.canTransition(next, state)) {
       state = sm.send(next, state);
       frameIndex = 0;
       frameAccMs = 0;
+      clipElapsedMs = 0;
 
       if (next === 'walk-left') {
         state = { ...state, direction: -1 };
@@ -189,7 +98,6 @@ export function bichito(config: BichitoConfig = {}): () => void {
       }
 
       if (next === 'jump') {
-        jumpPhase = 0;
         jumpOriginY = state.y;
       }
     }
@@ -197,13 +105,7 @@ export function bichito(config: BichitoConfig = {}): () => void {
 
   canvas.addEventListener('click', () => {
     if (sm.state === 'peek') {
-      const chosen = Math.random() < 0.5 ? 'jump' : 'heart';
-
-      transitionTo(chosen);
-
-      if (chosen === 'heart') {
-        showHeartOverlay(canvas, size);
-      }
+      transitionTo(Math.random() < 0.5 ? 'jump' : 'heart');
     } else {
       transitionTo('idle');
     }
@@ -215,22 +117,19 @@ export function bichito(config: BichitoConfig = {}): () => void {
     onFrame(elapsed) {
       const clip = definition.clips[sm.state];
       const msPerFrame = 1000 / clip.fps;
+      const clipDurationMs = clip.frames.length * msPerFrame;
 
       frameAccMs += elapsed;
+      clipElapsedMs += elapsed;
 
       if (frameAccMs >= msPerFrame) {
-        frameAccMs = 0;
+        // Carry the remainder so playback keeps clip-accurate timing rather
+        // than rounding down to the animation frame rate.
+        frameAccMs -= msPerFrame;
 
-        if (clip.loop) {
-          frameIndex = (frameIndex + 1) % clip.frames.length;
-        } else {
-          frameIndex = Math.min(frameIndex + 1, clip.frames.length - 1);
-
-          // non-looping clips auto-transition to idle when done
-          if (frameIndex === clip.frames.length - 1) {
-            setTimeout(() => transitionTo('idle'), msPerFrame);
-          }
-        }
+        frameIndex = clip.loop
+          ? (frameIndex + 1) % clip.frames.length
+          : Math.min(frameIndex + 1, clip.frames.length - 1);
       }
 
       // Move based on animation state
@@ -261,15 +160,17 @@ export function bichito(config: BichitoConfig = {}): () => void {
           transitionTo('idle');
         }
       } else if (cur === 'jump') {
-        jumpPhase += 0.15;
-        const arc = Math.sin(jumpPhase) * size * 1.5;
+        // Drive the arc off clip progress so the hop lands exactly when the
+        // landing frame is drawn.
+        const progress = Math.min(clipElapsedMs / clipDurationMs, 1);
+        const arc = Math.sin(progress * Math.PI) * size * 1.5;
 
         state = { ...state, y: jumpOriginY - arc };
+      }
 
-        if (jumpPhase >= Math.PI) {
-          state = { ...state, y: jumpOriginY };
-          transitionTo('idle');
-        }
+      // One-shot clips return to idle once they have played through.
+      if (!clip.loop && clipElapsedMs >= clipDurationMs) {
+        transitionTo('idle');
       }
 
       const clamped = clampPosition(state.x, state.y, size);
@@ -281,7 +182,7 @@ export function bichito(config: BichitoConfig = {}): () => void {
 
       const frame = clip.frames[frameIndex];
 
-      if (frame != null) {
+      if (frame !== undefined) {
         renderFrame(ctx, frame, size);
       }
     },

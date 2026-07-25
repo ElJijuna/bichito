@@ -20,7 +20,7 @@ export class StateMachine {
         t.from === this.current ||
         (Array.isArray(t.from) && t.from.includes(this.current));
       const toMatch = t.to === to;
-      const guardPass = t.guard == null || t.guard(context);
+      const guardPass = t.guard === undefined || t.guard(context);
 
       return fromMatch && toMatch && guardPass;
     });
@@ -33,12 +33,12 @@ export class StateMachine {
         t.from === this.current ||
         (Array.isArray(t.from) && t.from.includes(this.current));
       const toMatch = t.to === event;
-      const guardPass = t.guard == null || t.guard(context);
+      const guardPass = t.guard === undefined || t.guard(context);
 
       return fromMatch && toMatch && guardPass;
     });
 
-    if (transition == null) {
+    if (transition === undefined) {
       return context;
     }
 

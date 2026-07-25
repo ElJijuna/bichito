@@ -51,12 +51,15 @@ Returns a **destroy function** — call it to stop the pet and remove its canvas
 
 | ID | Species | Description |
 |---|---|---|
-| `ariel` | Cat | Black, green eyes |
-| `cain` | Cat | Yellow tabby, white right paw, white chest, yellow eyes |
-| `samael` | Cat | White, light blue eyes |
-| `thor` | French Bulldog | Blue pied |
-| `loki` | French Bulldog | Blue pied, white chest |
-| `pizza` | French Bulldog | Blue merle pied |
+| `ariel` | Cat | Black coat, bright green eyes |
+| `cain` | Cat | Amber tabby with dark banding, yellow eyes |
+| `samael` | Cat | White coat, ice-blue eyes |
+| `thor` | French Bulldog | Blue pied, warm brown eyes |
+| `loki` | French Bulldog | Fawn with a dark mask, green eyes |
+| `pizza` | French Bulldog | Blue merle, pale blue eyes |
+
+Cats and French bulldogs have genuinely different silhouettes — the frenchies get
+tall bat ears, a wide flat muzzle and a stubby tail.
 
 ---
 
@@ -64,11 +67,15 @@ Returns a **destroy function** — call it to stop the pet and remove its canvas
 
 | Behavior | How it triggers |
 |---|---|
-| **Idle** | Random, between walks |
-| **Walk left / right / up / down** | Random, every 3–6 seconds |
-| **Peek** | Pet walks to the right edge, stops and faces you |
-| **Jump** | Click the pet while it peeks (50% chance) |
-| **Heart** | Click the pet while it peeks (50% chance) — floating heart bubble |
+| **Idle** | Random, between walks — the pet breathes and blinks |
+| **Walk left / right** | Random, every 3–6 seconds — four-key side walk cycle |
+| **Walk up / down** | Random — back view walking away, front view walking toward you |
+| **Peek** | Pet walks to the right edge, leans in and watches you |
+| **Jump** | Click the pet while it peeks (50% chance) — crouch, launch, hang, land |
+| **Heart** | Click the pet while it peeks (50% chance) — the pet beams and a heart floats up |
+
+Every clip animates: no state renders as a still image, and the walk cycles use
+four distinct key frames rather than repeating two.
 
 ---
 
@@ -96,12 +103,45 @@ npm run storybook    # Storybook dev server
 
 ## Adding a new pet
 
-1. Create `src/pets/<name>.ts` — export a `PetDefinition` with all 8 `AnimationState` clips
-2. Add it to `src/pets/index.ts` — register in `PET_REGISTRY`
-3. Add `<name>` to the `PetId` union in `src/types.ts`
-4. Create `stories/<name>.stories.ts`
+Most pets are a re-skin of an existing species, so they are a palette and nothing else:
 
-Each sprite frame is a 30×30 array of CSS hex strings or `null` (transparent). Use `buildFrame()` with a palette map to keep the data readable.
+```ts
+// src/pets/<name>.ts
+import { buildClips } from './build-clips.js'
+import { CAT_POSES } from './cat-art.js'
+
+export const myPetDefinition: PetDefinition = {
+  id: 'mypet',
+  clips: buildClips(CAT_POSES, { outline: '#…', body: '#…' /* …SpeciesColors */ }),
+}
+```
+
+Then register it in `src/pets/index.ts`, add the id to the `PetId` union in
+`src/types.ts`, and add `stories/<name>.stories.ts`.
+
+For breed markings (stripes, a mask, merle patches) wrap the clips in
+`applyMarkings()` with a per-pixel function instead of redrawing the art — see
+`cain.ts`, `loki.ts` and `pizza.ts`.
+
+### Drawing a new species
+
+Sprites are authored as 30×30 character grids rather than colour arrays, so the
+art stays readable and editable in source:
+
+```ts
+export const FRONT = [
+  '........oo..........oo........',
+  '.......oyBo........oByo.......',
+  // …30 rows of 30 chars
+]
+```
+
+`.` is transparent and each other character maps to a `SpeciesColors` slot
+(`o` outline, `B` body, `G` iris, `P` pupil, `n` nose, …). Supply the eleven
+poses of a `PoseSet` — front, blink, happy, four walk keys, back, peek, crouch,
+stretch — and `buildClips()` assembles all eight animation clips from them.
+`parseFrame()` throws at import time if a grid is not 30×30 or uses an
+undeclared character.
 
 ---
 
